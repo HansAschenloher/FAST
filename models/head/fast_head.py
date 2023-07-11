@@ -80,11 +80,11 @@ class FASTHead(nn.Module):
         score_maps = score_maps.squeeze(1)  # B*640*640
         
         kernels = (out[:, 0, :, :] > 0).to(torch.uint8)  # B*160*160
-        if kernels.is_cuda:
+        if kernels.is_cuda and False:
             labels_ = ccl_cuda.ccl_batch(kernels)  # B*160*160
         else:
             labels_ = []
-            for kernel in kernels.numpy():
+            for kernel in kernels.cpu().numpy():
                 ret, label_ = cv2.connectedComponents(kernel)
                 labels_.append(label_)
             labels_ = np.array(labels_)
