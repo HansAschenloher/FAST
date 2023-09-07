@@ -1,17 +1,16 @@
 model = dict(
-    type='FAST',
-    backbone=dict(
+    type='FAST', backbone=dict(
         type='fast_backbone',
-        config='config/fast/nas-configs/fast_base.config'
+        config='../FAST/config/fast/nas-configs/fast_base.config'
     ),
     neck=dict(
         type='fast_neck',
-        config='config/fast/nas-configs/fast_base.config'
+        config='../FAST/config/fast/nas-configs/fast_base.config'
     ),
     detection_head=dict(
         type='fast_head',
-        config='config/fast/nas-configs/fast_base.config',
-        pooling_size=9,
+        config='../FAST/config/fast/nas-configs/fast_base.config',
+        pooling_size=13,
         dropout_ratio=0.1,
         loss_text=dict(
             type='DiceLoss',
@@ -28,9 +27,9 @@ model = dict(
         )
     )
 )
-repeat_times = 10
+repeat_times = 2
 data = dict(
-    batch_size=16,
+    batch_size=1,
     train=dict(
         type='FAST_TT',
         split='train',
@@ -45,21 +44,22 @@ data = dict(
         type='FAST_TT',
         split='test',
         short_size=640,
-        read_type='pil'
+        read_type='cv2'
     )
 )
 train_cfg = dict(
     lr=1e-3,
     schedule='polylr',
-    epoch=300 // repeat_times,
+    epoch=10 // repeat_times,
     optimizer='Adam',
     pretrain='pretrained/fast_base_ic17mlt_640.pth',
     # https://github.com/czczup/FAST/releases/download/release/fast_base_ic17mlt_640.pth
-    save_interval=10 // repeat_times,
+    #save_interval=1 // repeat_times,
+    save_interval=1,
 )
 test_cfg = dict(
-    min_score=0.85,
+    min_score=0.50,
     min_area=250,
-    bbox_type='poly',
+    bbox_type='rect',
     result_path='outputs/submit_tt/'
 )
